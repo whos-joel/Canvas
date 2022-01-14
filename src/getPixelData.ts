@@ -1,4 +1,4 @@
-export default function getPixelData(ctx, size) {
+export default function getPixelData(ctx: CanvasRenderingContext2D, size:number): Rgb[] {
   let colors = [];
   const xLen = ctx.canvas.width / size;
   const yLen = ctx.canvas.height / size;
@@ -12,7 +12,7 @@ export default function getPixelData(ctx, size) {
   return colors;
 }
 
-function getRgba(data) {
+function getRgba(data: Uint8ClampedArray): Rgba[] {
   const length = data.length / 4;
   let rgba = [];
   for (let i = 0; i < length; i++) {
@@ -27,7 +27,7 @@ function getRgba(data) {
   return rgba;
 }
 
-function getAverageValue(data) {
+function getAverageValue(data: Uint8ClampedArray): Rgba {
   let rgba = getRgba(data);
   let r = 0;
   let g = 0;

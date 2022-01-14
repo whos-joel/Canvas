@@ -1,4 +1,4 @@
-export function RgbToHsl(r, g, b) {
+export function RgbToHsl(r:number, g:number, b:number):Hsl {
   // Make r, g, and b fractions of 1
   r /= 255;
   g /= 255;
@@ -37,7 +37,7 @@ export function RgbToHsl(r, g, b) {
   return { h, s, l };
 }
 
-export function HslToRgb(h, s, l) {
+export function HslToRgb(h:number, s:number, l:number) : Rgb{
   // Must be fractions of 1
   s /= 100;
   l /= 100;

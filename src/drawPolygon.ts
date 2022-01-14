@@ -1,5 +1,5 @@
 export default function drawPolygon(
-  ctx,
+  ctx: CanvasRenderingContext2D,
   {
     x = 0,
     y = 0,
@@ -11,7 +11,7 @@ export default function drawPolygon(
     strokeWidth = 1,
     fill = "#ccc",
   }
-) {
+):void {
   if (sides < 3) throw "Cannot draw polygon with less than 3 sides";
 
   ctx.strokeStyle = strokeColor;
@@ -50,7 +50,7 @@ export default function drawPolygon(
   ctx.beginPath();
 }
 
-function getControlPoints(sides, radius, rotation) {
+function getControlPoints(sides: number, radius: number, rotation: number): Coord[] {
   const segmentRadian = toRadian(360 / sides);
   const rotationRadian = toRadian(rotation);
   let cp = [];
@@ -62,7 +62,7 @@ function getControlPoints(sides, radius, rotation) {
   return cp;
 }
 
-function getPoints(cornerRadius, controlPoints) {
+function getPoints(cornerRadius:number, controlPoints:Coord[]): Coord[] {
   let hypotenuse = Math.hypot(
     controlPoints[0].x - controlPoints[1].x,
     controlPoints[0].y - controlPoints[1].y
@@ -102,6 +102,6 @@ function getPoints(cornerRadius, controlPoints) {
   return p;
 }
 
-function toRadian(degrees) {
+function toRadian(degrees:number):number {
   return (Math.PI / 180) * degrees;
 }
