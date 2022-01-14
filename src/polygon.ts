@@ -66,10 +66,10 @@ function drawPolygon({sides, radius, borderRadius, strokeColor, strokeWidth, fil
   return canvas;
 }
 
-function createCanvas(radius) {
+function createCanvas(radius:number):HTMLCanvasElement {
   const canvas = document.createElement("canvas");
-  canvas.setAttribute("width", radius * 4);
-  canvas.setAttribute("height", radius * 4);
+  canvas.setAttribute("width", `${radius * 4}`);
+  canvas.setAttribute("height", `${radius * 4}`);
   canvas.style.position = "absolute";
   document.getElementsByTagName("body")[0].append(canvas);
   return canvas;
@@ -177,6 +177,8 @@ function create(sides, borderRadius) {
       sides: sides,
       radius: 100,
       borderRadius: borderRadius,
+      strokeColor: null,
+      strokeWidth: 0,
       fill: "#ccc"
     }));
   }

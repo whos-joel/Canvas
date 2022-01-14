@@ -1,5 +1,6 @@
-import createCanvas from "./createCanvas.js";
-import chuckArt from "./chuckArt.js";
+import createCanvas from "./createCanvas";
+import chuckArt from "./chuckArt";
+import "./../styles/site.less";
 // import drawPolygon from "./drawPolygon.js";
 // import getPixelData from "./getPixelData.js";
 // import { RgbToHsl, HslToRgb } from "./colorConverters.js";

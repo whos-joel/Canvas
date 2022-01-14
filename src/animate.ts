@@ -61,7 +61,7 @@ export default function setTweenerData(tweeners, out, radius) {
     return value;
   }
   
-  function getProgress(from, to, current) {
+  function getProgress(from:number, to:number, current:number):number {
     let value = (current - from) / (to - from);
     return value;
   }

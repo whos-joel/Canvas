@@ -1,6 +1,6 @@
-import drawPolygon from "./drawPolygon.js";
-import getPixelData from "./getPixelData.js";
-import { RgbToHsl, HslToRgb } from "./colorConverters.js";
+import drawPolygon from "./drawPolygon";
+import getPixelData from "./getPixelData";
+import { RgbToHsl, HslToRgb } from "./colorConverters";
 
 export default class ChuckArt {
   ctx;

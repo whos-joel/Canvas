@@ -1,4 +1,4 @@
-export default function createCanvas({ width, height, position = "inherit" }) {
+export default function createCanvas({ width, height, position = "inherit" }):HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.setAttribute("width", width);
   canvas.setAttribute("height", height);

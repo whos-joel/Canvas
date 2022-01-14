@@ -1,6 +1,7 @@
-import drawPolygon from "./drawPolygon.js";
-import { setTweenerData, sinCurve, cosCurve } from "./animateSine.js";
-import createCanvas from "./createCanvas.js";
+import drawPolygon from "./drawPolygon";
+import { setTweenerData, sinCurve, cosCurve } from "./animateSine";
+import createCanvas from "./createCanvas";
+import "./../styles/site.less";
 ///import setTweenerData from "./animate.js";
 
 let polygons = [];
@@ -41,7 +42,7 @@ function step(timestamp) {
 
   progress++;
 
-  setTweenerData(tweeners, out, width, progress);
+  setTweenerData(tweeners, out, width);
 
   draw(canvas, tweeners);
 
