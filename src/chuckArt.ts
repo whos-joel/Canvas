@@ -3,24 +3,24 @@ import getPixelData from "./getPixelData";
 import { RgbToHsl, HslToRgb } from "./colorConverters";
 
 export default class ChuckArt {
-  ctx;
-  ctx2;
+  ctx:CanvasRenderingContext2D;
+  ctx2:CanvasRenderingContext2D;
 
-  constructor(ctx, ctx2) {
+  constructor(ctx:CanvasRenderingContext2D, ctx2:CanvasRenderingContext2D) {
     this.ctx = ctx;
     this.ctx2 = ctx2;
   }
 
-  pixelate(size, br) {
+  pixelate(size:number, br:number):void {
     pixelate(this.ctx, this.ctx2, size, br);
   }
 
-  pixelate2(size, br) {
+  pixelate2(size:number, br:number):void {
     pixelate2(this.ctx, this.ctx2, size, br);
   }
 }
 
-function pixelate(ctx, ctx2, size, br) {
+function pixelate(ctx:CanvasRenderingContext2D, ctx2:CanvasRenderingContext2D, size:number, br:number):void {
   let pixels = getPixelData(ctx, size);
 
   const xLen = Math.ceil(ctx.canvas.width / size);
@@ -43,7 +43,7 @@ function pixelate(ctx, ctx2, size, br) {
   }
 }
 
-function pixelate2(ctx, ctx2, size, br) {
+function pixelate2(ctx:CanvasRenderingContext2D, ctx2:CanvasRenderingContext2D, size:number, br:number):void {
   let pixels = getPixelData(ctx, size);
 
   const xLen = Math.ceil(ctx.canvas.width / size);
@@ -65,7 +65,7 @@ function pixelate2(ctx, ctx2, size, br) {
   }
 }
 
-function draw(ctx, x, y, rad, pixel, n, p, br) {
+function draw(ctx:CanvasRenderingContext2D, x:number, y:number, rad:number, pixel:Rgb, n:number, p:number, br:number):void {
   let colors =
     rad <= 3
       ? modifyColor(pixel, Math.random() * 45 - 22, Math.random() * 0.25 - 0.125, Math.random() * 0.25 - 0.125)
@@ -88,7 +88,7 @@ function draw(ctx, x, y, rad, pixel, n, p, br) {
   });
 }
 
-function draw2(ctx, x, y, rad, pixel, n, p, br) {
+function draw2(ctx:CanvasRenderingContext2D, x:number, y:number, rad:number, pixel:Rgb, n:number, p:number, br:number):void {
     let colors =
       rad <= 3
         ? modifyColor(pixel, Math.random() * 45 - 22, Math.random() * 0.25 - 0.125, Math.random() * 0.25 - 0.125)
@@ -129,17 +129,17 @@ function getExtractColors(color, n, a) {
   return colors;
 }
 
-function modifyColor({ r, g, b }, h, s, l) {
-  let hsl = RgbToHsl(r, g, b);
+function modifyColor(rgb: Rgb, h:number, s:number, l:number): string[] {
+  let hsl = RgbToHsl(rgb.r, rgb.g, rgb.b);
   hsl.h += h;
   //hsl.h = hsl.h > 360 ? 100 : hsl.h < 0 ? 0 : hsl.h;
   hsl.s += hsl.s * s;
   hsl.s = hsl.s > 100 ? 100 : hsl.s < 0 ? 0 : hsl.s;
   hsl.l += hsl.l * l;
   hsl.l = hsl.l > 100 ? 100 : hsl.l < 0 ? 0 : hsl.l;
-  let rgb = HslToRgb(hsl.h, hsl.s, hsl.l);
+  let rgb2 = HslToRgb(hsl.h, hsl.s, hsl.l);
 
-  return [formatRgba(rgb.r, rgb.g, rgb.b, 1)];
+  return [formatRgba(rgb2.r, rgb2.g, rgb2.b, 1)];
 }
 
 function drawRect(ctx, x, y, w, h, fill) {
@@ -153,6 +153,6 @@ function drawCircle(ctx, x, y, r, h, fill) {
   ctx.fill();
 }
 
-function formatRgba(r, g, b, a) {
+function formatRgba(r:number, g:number, b:number, a:number):string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
