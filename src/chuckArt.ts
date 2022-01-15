@@ -3,69 +3,64 @@ import getPixelData from "./getPixelData";
 import { RgbToHsl, HslToRgb } from "./colorConverters";
 
 export default class ChuckArt {
-  ctx:CanvasRenderingContext2D;
-  ctx2:CanvasRenderingContext2D;
+  ctxToCopy: CanvasRenderingContext2D;
+  ctxToPaint: CanvasRenderingContext2D;
 
-  constructor(ctx:CanvasRenderingContext2D, ctx2:CanvasRenderingContext2D) {
-    this.ctx = ctx;
-    this.ctx2 = ctx2;
+  constructor(ctxToCopy: CanvasRenderingContext2D, ctxToPaint: CanvasRenderingContext2D) {
+    this.ctxToCopy = ctxToCopy;
+    this.ctxToPaint = ctxToPaint;
   }
 
-  pixelate(size:number, br:number):void {
-    pixelate(this.ctx, this.ctx2, size, br);
+  pixelate(size: number, br: number): void {
+    const data = getCanvasData({ctxToCopy: this.ctxToCopy, size: size})
+
+    for (let y = 0; y < data.height; y++) {
+      for (let x = 0; x < data.width; x++) {
+        let i = x + y * data.width;
+        //   if (br === 0 || size === 10 || size === 3 || Math.round(Math.random() * size) >= size / 2)
+        //     draw(ctx2, x * size * 2, y * size * 2, size, pixels[i], 4, i, br);
+        if (
+          (size === 3 && y > data.height / 4 && y < data.height - data.height / 4 && x > data.width / 4 && x < data.width - data.width / 4) ||
+          br === 0 ||
+          //size === 10 ||
+          //size === 3 ||
+          Math.round(Math.random() * size) >= size / 2
+        )
+          draw(this.ctxToPaint, x * size * 2, y * size * 2, size, data.pixels[i], 4, i, br);
+      }
+    }
   }
 
-  pixelate2(size:number, br:number):void {
-    pixelate2(this.ctx, this.ctx2, size, br);
-  }
-}
+  pixelate2(size: number, br: number): void {
+    const data = getCanvasData({ctxToCopy: this.ctxToCopy, size: size})
+    let coords = [];
 
-function pixelate(ctx:CanvasRenderingContext2D, ctx2:CanvasRenderingContext2D, size:number, br:number):void {
-  let pixels = getPixelData(ctx, size);
+    for (let y = 0; y < data.height; y++) {
+      for (let x = 0; x < data.width; x++) {
+        let i = x + y * data.width;
+        coords.push({ x: x * size * 2, y: y * size * 2, pixel: data.pixels[i] });
+      }
+    }
 
-  const xLen = Math.ceil(ctx.canvas.width / size);
-  const yLen = Math.ceil(ctx.canvas.height / size);
-
-  for (let y = 0; y < yLen; y++) {
-    for (let x = 0; x < xLen; x++) {
-      let i = x + y * xLen;
-      //   if (br === 0 || size === 10 || size === 3 || Math.round(Math.random() * size) >= size / 2)
-      //     draw(ctx2, x * size * 2, y * size * 2, size, pixels[i], 4, i, br);
-      if (
-        (size === 3 && y > yLen / 4 && y < yLen - yLen / 4 && x > xLen / 4 && x < xLen - xLen / 4) ||
-        br === 0 ||
-        //size === 10 ||
-        //size === 3 ||
-        Math.round(Math.random() * size) >= size / 2
-      )
-        draw(ctx2, x * size * 2, y * size * 2, size, pixels[i], 4, i, br);
+    for (let i = 0; i < data.pixels.length; i++) {
+      let r = Math.floor(Math.random() * coords.length);
+      let coord = coords.splice(r, 1);
+      draw2(this.ctxToPaint, coord[0].x, coord[0].y, size, coord[0].pixel, 4, i, br);
     }
   }
 }
 
-function pixelate2(ctx:CanvasRenderingContext2D, ctx2:CanvasRenderingContext2D, size:number, br:number):void {
-  let pixels = getPixelData(ctx, size);
-
-  const xLen = Math.ceil(ctx.canvas.width / size);
-  const yLen = Math.ceil(ctx.canvas.height / size);
-
-  let coords = [];
-
-  for (let y = 0; y < yLen; y++) {
-    for (let x = 0; x < xLen; x++) {
-      let i = x + y * xLen;
-      coords.push({ x: x * size * 2, y: y * size * 2, pixel: pixels[i] });
-    }
-  }
-
-  for (let i = 0; i < pixels.length; i++) {
-    let r = Math.floor(Math.random() * coords.length);
-    let coord = coords.splice(r, 1);
-    draw2(ctx2, coord[0].x, coord[0].y, size, coord[0].pixel, 4, i, br);
+type CanvasData = {pixels: Rgb[], width:number, height:number}
+type CanvasSetting = {ctxToCopy: CanvasRenderingContext2D, size:number}
+function getCanvasData({ctxToCopy, size}:CanvasSetting): CanvasData{
+  return{
+    pixels : getPixelData(ctxToCopy, size),
+    width: Math.ceil(ctxToCopy.canvas.width / size),
+    height: Math.ceil(ctxToCopy.canvas.height / size)
   }
 }
 
-function draw(ctx:CanvasRenderingContext2D, x:number, y:number, rad:number, pixel:Rgb, n:number, p:number, br:number):void {
+function draw(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number, pixel: Rgb, n: number, p: number, br: number): void {
   let colors =
     rad <= 3
       ? modifyColor(pixel, Math.random() * 45 - 22, Math.random() * 0.25 - 0.125, Math.random() * 0.25 - 0.125)
@@ -88,28 +83,28 @@ function draw(ctx:CanvasRenderingContext2D, x:number, y:number, rad:number, pixe
   });
 }
 
-function draw2(ctx:CanvasRenderingContext2D, x:number, y:number, rad:number, pixel:Rgb, n:number, p:number, br:number):void {
-    let colors =
-      rad <= 3
-        ? modifyColor(pixel, Math.random() * 45 - 22, Math.random() * 0.25 - 0.125, Math.random() * 0.25 - 0.125)
-        : modifyColor(pixel, Math.random() * 190 - 95, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25);
-  
-    let newRad = Math.hypot(rad, rad) + (Math.ceil(Math.random() * rad));
-  
-    let s = Math.round(Math.random() * (rad > 10 ? 6 : 2)) + 4;
-  
-    drawPolygon(ctx, {
-      x: x + rad,
-      y: y + rad,
-      sides: s,
-      radius: newRad,
-      rotation: p,
-      borderRadius: newRad / 5,
-      strokeColor: "rgba(255, 255, 255, .25)",
-      strokeWidth: 0,
-      fill: colors[0], //newRad === 3 ? colors[0] : colors[Math.floor(Math.random() * 4)],
-    });
-  }
+function draw2(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number, pixel: Rgb, n: number, p: number, br: number): void {
+  let colors =
+    rad <= 3
+      ? modifyColor(pixel, Math.random() * 45 - 22, Math.random() * 0.25 - 0.125, Math.random() * 0.25 - 0.125)
+      : modifyColor(pixel, Math.random() * 190 - 95, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25);
+
+  let newRad = Math.hypot(rad, rad) + (Math.ceil(Math.random() * rad));
+
+  let s = Math.round(Math.random() * (rad > 10 ? 6 : 2)) + 4;
+
+  drawPolygon(ctx, {
+    x: x + rad,
+    y: y + rad,
+    sides: s,
+    radius: newRad,
+    rotation: p,
+    borderRadius: newRad / 5,
+    strokeColor: "rgba(255, 255, 255, .25)",
+    strokeWidth: 0,
+    fill: colors[0], //newRad === 3 ? colors[0] : colors[Math.floor(Math.random() * 4)],
+  });
+}
 
 function getExtractColors(color, n, a) {
   let colors = [`rgba(${color.r}, ${color.g},${color.b}, ${a})`];
@@ -129,7 +124,7 @@ function getExtractColors(color, n, a) {
   return colors;
 }
 
-function modifyColor(rgb: Rgb, h:number, s:number, l:number): string[] {
+function modifyColor(rgb: Rgb, h: number, s: number, l: number): string[] {
   let hsl = RgbToHsl(rgb.r, rgb.g, rgb.b);
   hsl.h += h;
   //hsl.h = hsl.h > 360 ? 100 : hsl.h < 0 ? 0 : hsl.h;
@@ -153,6 +148,6 @@ function drawCircle(ctx, x, y, r, h, fill) {
   ctx.fill();
 }
 
-function formatRgba(r:number, g:number, b:number, a:number):string {
+function formatRgba(r: number, g: number, b: number, a: number): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }

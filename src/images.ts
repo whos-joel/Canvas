@@ -14,7 +14,7 @@ image.onload = function () {
 
   const canvas = createCanvas({
     width: width,
-    height: height,
+    height: height
   });
 
   let ctx = canvas.getContext("2d");
@@ -23,6 +23,7 @@ image.onload = function () {
   const canvas2 = createCanvas({
     width: ctx.canvas.width * 2,
     height: ctx.canvas.height * 2,
+    appendToElement: "#image-container"
   });
 
   const ctx2 = canvas2.getContext("2d");
