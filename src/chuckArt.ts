@@ -12,7 +12,7 @@ export default class ChuckArt {
   }
 
   pixelate(size: number, br: number): void {
-    const data = getCanvasData({ctxToCopy: this.ctxToCopy, size: size})
+    const data = getCanvasData({ ctxToCopy: this.ctxToCopy, size: size })
 
     for (let y = 0; y < data.height; y++) {
       for (let x = 0; x < data.width; x++) {
@@ -32,7 +32,7 @@ export default class ChuckArt {
   }
 
   pixelate2(size: number, br: number): void {
-    const data = getCanvasData({ctxToCopy: this.ctxToCopy, size: size})
+    const data = getCanvasData({ ctxToCopy: this.ctxToCopy, size: size })
     let coords = [];
 
     for (let y = 0; y < data.height; y++) {
@@ -48,13 +48,58 @@ export default class ChuckArt {
       draw2(this.ctxToPaint, coord[0].x, coord[0].y, size, coord[0].pixel, 4, i, br);
     }
   }
+
+  
+  pixelateRandom(size: number, settings: DrawSetting): void {
+    const data = getCanvasData({ ctxToCopy: this.ctxToCopy, size: size })
+    let pixelationData: PixelationData[] = [];
+
+    for (let y = 0; y < data.height; y++) {
+      for (let x = 0; x < data.width; x++) {
+        let i = x + y * data.width;
+        pixelationData.push({ coord: { x: x * size * 2, y: y * size * 2 }, rgb: data.pixels[i] });
+      }
+    }
+
+    for (let i = 0; i < data.pixels.length; i++) {
+      let r = Math.floor(Math.random() * pixelationData.length);
+      let data = pixelationData.splice(r, 1)[0];
+      var settings2 = JSON.parse(JSON.stringify(settings)) as DrawSetting;
+      settings2.position.props = data.coord;
+      settings2.radius.props = size; //Math.hypot(size, size);
+      settings2.colour = modifyColor(data.rgb, Math.random() * 190 - 95, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25);
+      this.drawRandom(settings2);
+    }
+  }
+
+  drawRandom(settting: DrawSetting) {
+
+    const x = getRandom(settting.position.props.x + settting.position.range.min, settting.position.props.x + settting.position.range.max);
+    const y = getRandom(settting.position.props.y + settting.position.range.min, settting.position.props.y + settting.position.range.max);
+    const sides = getRandom(settting.sides.props + settting.sides.range.min, settting.sides.props + settting.sides.range.max);
+    const radius = getRandom(settting.radius.props + settting.radius.range.min, settting.radius.props + settting.radius.range.max);
+    const rotation = getRandom(settting.rotation.props + settting.rotation.range.min, settting.rotation.props + settting.rotation.range.max);
+    const borderRadius = getRandom(settting.borderRadius.props + settting.borderRadius.range.min, settting.borderRadius.props + settting.borderRadius.range.max);
+
+    drawPolygon(this.ctxToPaint, {
+      x: x,
+      y: y,
+      sides: sides,
+      radius: radius,
+      rotation: rotation,
+      borderRadius: borderRadius,
+      strokeWidth: 0,
+      fill: settting.colour
+    });
+  }
 }
 
-type CanvasData = {pixels: Rgb[], width:number, height:number}
-type CanvasSetting = {ctxToCopy: CanvasRenderingContext2D, size:number}
-function getCanvasData({ctxToCopy, size}:CanvasSetting): CanvasData{
-  return{
-    pixels : getPixelData(ctxToCopy, size),
+type PixelationData = {coord:Coord, rgb:Rgb}
+type CanvasData = { pixels: Rgb[], width: number, height: number }
+type CanvasSetting = { ctxToCopy: CanvasRenderingContext2D, size: number }
+function getCanvasData({ ctxToCopy, size }: CanvasSetting): CanvasData {
+  return {
+    pixels: getPixelData(ctxToCopy, size),
     width: Math.ceil(ctxToCopy.canvas.width / size),
     height: Math.ceil(ctxToCopy.canvas.height / size)
   }
@@ -79,8 +124,18 @@ function draw(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number, 
     borderRadius: 0,
     strokeColor: "rgba(255, 255, 255, .25)",
     strokeWidth: rad > 5 ? 0 : 0,
-    fill: colors[0], //newRad === 3 ? colors[0] : colors[Math.floor(Math.random() * 4)],
+    fill: colors, //newRad === 3 ? colors[0] : colors[Math.floor(Math.random() * 4)],
   });
+}
+
+type RandomSetting<Type> = { props?: Type, range: whosJoel.Range }
+type DrawSetting = {
+  position: RandomSetting<Coord>,
+  sides: RandomSetting<number>,
+  radius: RandomSetting<number>,
+  rotation: RandomSetting<number>,
+  borderRadius: RandomSetting<number>,
+  colour?: string
 }
 
 function draw2(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number, pixel: Rgb, n: number, p: number, br: number): void {
@@ -89,7 +144,8 @@ function draw2(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number,
       ? modifyColor(pixel, Math.random() * 45 - 22, Math.random() * 0.25 - 0.125, Math.random() * 0.25 - 0.125)
       : modifyColor(pixel, Math.random() * 190 - 95, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25);
 
-  let newRad = Math.hypot(rad, rad) + (Math.ceil(Math.random() * rad));
+  let hypot = Math.hypot(rad, rad);
+  let newRad = getRandom(hypot, hypot + rad);
 
   let s = Math.round(Math.random() * (rad > 10 ? 6 : 2)) + 4;
 
@@ -102,7 +158,7 @@ function draw2(ctx: CanvasRenderingContext2D, x: number, y: number, rad: number,
     borderRadius: newRad / 5,
     strokeColor: "rgba(255, 255, 255, .25)",
     strokeWidth: 0,
-    fill: colors[0], //newRad === 3 ? colors[0] : colors[Math.floor(Math.random() * 4)],
+    fill: colors, //newRad === 3 ? colors[0] : colors[Math.floor(Math.random() * 4)],
   });
 }
 
@@ -124,7 +180,7 @@ function getExtractColors(color, n, a) {
   return colors;
 }
 
-function modifyColor(rgb: Rgb, h: number, s: number, l: number): string[] {
+function modifyColor(rgb: Rgb, h: number, s: number, l: number): string {
   let hsl = RgbToHsl(rgb.r, rgb.g, rgb.b);
   hsl.h += h;
   //hsl.h = hsl.h > 360 ? 100 : hsl.h < 0 ? 0 : hsl.h;
@@ -134,7 +190,7 @@ function modifyColor(rgb: Rgb, h: number, s: number, l: number): string[] {
   hsl.l = hsl.l > 100 ? 100 : hsl.l < 0 ? 0 : hsl.l;
   let rgb2 = HslToRgb(hsl.h, hsl.s, hsl.l);
 
-  return [formatRgba(rgb2.r, rgb2.g, rgb2.b, 1)];
+  return formatRgba(rgb2.r, rgb2.g, rgb2.b, 1);
 }
 
 function drawRect(ctx, x, y, w, h, fill) {
@@ -150,4 +206,9 @@ function drawCircle(ctx, x, y, r, h, fill) {
 
 function formatRgba(r: number, g: number, b: number, a: number): string {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
+
+function getRandom(x: number, y: number, isInt?: boolean) {
+  let n = Math.random() * (y - x) + x;
+  return isInt ? Math.round(n) : n;
 }
