@@ -1,5 +1,6 @@
 import createCanvas from "./createCanvas";
 import chuckArt from "./chuckArt";
+import "./art-control"
 import "./../styles/site.less";
 // import drawPolygon from "./drawPolygon.js";
 // import getPixelData from "./getPixelData.js";
@@ -106,3 +107,17 @@ image.onload = function () {
 };
 
 image.src = "/images/jimi.png";
+
+
+
+window.onload = function(){
+  document.querySelector("#art-control").addEventListener("valueChange", function(e:CustomEvent){
+    console.log("art-control value changed, value: " + e.detail)
+  });
+  document.querySelector("#art-control").addEventListener("minChange", function(e:CustomEvent){
+    console.log("art-control min changed, value: " + e.detail)
+  });
+  document.querySelector("#art-control").addEventListener("maxChange", function(e:CustomEvent){
+    console.log("art-control max changed, value: " + e.detail)
+  });
+}
